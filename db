@@ -1,0 +1,53 @@
+CREATE TABLE tbl_users (
+    id INT IDENTITY(1, 1) PRIMARY KEY,
+    last_name varchar(255),
+    first_name varchar(255),
+    email_id varchar(255),
+    org varchar(255),
+    user_type varchar(255),
+    usa_state varchar(255)
+);
+
+INSERT INTO tbl_users (last_name,first_name,email_id,org,user_type,usa_state)
+VALUES ('Patel', 'OM', 'patel3889@mydusd.org', 'mydusd.org', 'STUDENT', 'California');
+
+
+
+Select * from tbl_users;
+
+CREATE TABLE tbl_classes (
+    id INT IDENTITY(1, 1) PRIMARY KEY,
+    teacher_id INT,
+    class_name varchar(255),
+    teacher_email_id varchar(255),
+    email_ids varchar(MAX)
+);
+
+
+
+INSERT INTO tbl_classes (teacher_id,class_name,teacher_email_id,email_ids)
+VALUES ('2', 'History', 'omplays3889@gmail.com', 'patel3889@mydusd.org, cmaheta84@gmail.com');
+
+
+Select * from tbl_classes;
+
+
+
+
+
+CREATE TABLE tbl_assignments (
+    id INT IDENTITY(1, 1) PRIMARY KEY,
+    owner_email_id varchar(255),
+    class_name varchar(255),
+    class_id INT,
+    title VARCHAR(255),
+    details VARCHAR(8000),
+    duedate varchar(255)
+);
+
+INSERT INTO tbl_assignments (owner_email_id,class_name,class_id,title,details,duedate)
+VALUES ('omplays3889@gmail.com', 'History', '1', 'Brochure','A brochure of sailing west!', '9/7/2024');
+
+
+
+Select * from tbl_assignments;
