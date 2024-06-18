@@ -2,6 +2,7 @@ const sql = require("mssql");
 const http = require('http');
 const { queryDatabase } = require('./db.js');
 
+
   const getUsers = async (req) => {
     const parsedUrl = new URL(req.url, `https://${req.headers.host}/`);
     const emailID = parsedUrl.searchParams.get('email_id');
