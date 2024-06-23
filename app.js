@@ -31,8 +31,8 @@ app.get('/api/obtainassignments', async (req, res) => {
 app.post('/api/createclass', express.json(), async (req, res) => {
     const queryParams = req.query;
     const body = req.body;
-    await createClass(queryParams.email_id, body);
-    res.json({ body });
+    const class_id = await createClass(queryParams.email_id, body);
+    res.json({ class_id });
   });
 
 app.post('/api/createassignment', express.json(), async (req, res) => {
