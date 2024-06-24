@@ -1,16 +1,11 @@
 const express = require('express');
 const app = express();
-const {getUsers, getClasses, getAssignments, createClass} = require('./process.js')
+const {getUsers, getClasses, getAssignments, createClass, createAssignment, createUser} = require('./process.js')
 
 app.get('/api/getuser', async (req, res) => {
     const queryParams = req.query;
     const results = await getUsers(queryParams.email_id);
     res.write(JSON.stringify(results));
-    res.end();
-});
-
-app.get('/api/verifyuser', async (req, res) => {
-     res.write("verifyuser called");
     res.end();
 });
 
@@ -35,11 +30,19 @@ app.post('/api/createclass', express.json(), async (req, res) => {
     res.json({ class_id });
   });
 
-app.post('/api/createassignment', express.json(), async (req, res) => {
-    // Access body data
+  app.post('/api/createuser', express.json(), async (req, res) => {
+    const queryParams = req.query;
     const body = req.body;
-    console.log('Body Data:', body);
-    res.json({ body });
+    const user_id = await createUser(queryParams.email_id, body);
+    res.json({ user_id });
+  });
+
+  
+app.post('/api/createassignment', express.json(), async (req, res) => {
+  const queryParams = req.query;
+  const body = req.body;
+  const assignment_id = await createAssignment(queryParams.email_id, body);
+  res.json({ assignment_id });
   });
 
 const PORT = 9999;

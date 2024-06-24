@@ -3,7 +3,7 @@ const http = require('http');
 const { queryDatabase } = require('./db.js');
 
 
-  const getUsers = async (email_id) => {
+const getUsers = async (email_id) => {
     const query = 'SELECT * FROM tbl_users WHERE email_id = @emailID';
     const params = [
         { name: 'emailID', type: sql.VarChar, value: email_id }
@@ -30,51 +30,138 @@ const getAssignments = async (email_id) => {
     return results;
 }
 
+
 const createClass = async (current_loggedin_user_email_id, class_details) => {
     let users = await getUsers(current_loggedin_user_email_id);
-    if(users && users.length == 1) {
+    if (users && users.length == 1) {
         user_type = users[0].user_type;
         teacher_id = users[0].id;
-        
-        const query = 'INSERT INTO tbl_classes (teacher_id,class_name,teacher_email_id,email_ids)'+
-        'VALUES (@teacherID, @className, @teacherEmailID, @emailIDs); SELECT SCOPE_IDENTITY() AS InsertedID;';
+
+        const query = 'INSERT INTO tbl_classes (teacher_id,class_name,teacher_email_id,email_ids)' +
+            'VALUES (@teacherID, @className, @teacherEmailID, @emailIDs); SELECT SCOPE_IDENTITY() AS InsertedID;';
         const params = [
             { name: 'teacherID', type: sql.Int, value: teacher_id },
             { name: 'className', type: sql.VarChar, value: class_details.class_name },
             { name: 'teacherEmailID', type: sql.VarChar, value: current_loggedin_user_email_id },
             { name: 'emailIDs', type: sql.VarChar, value: class_details.email_ids }
         ];
-        const result =  await queryDatabase(query, params);
+        const result = await queryDatabase(query, params);
 
         const class_id = result[0].InsertedID;
-        if(user_type === 'TEACHER') {
-            await create_emailID_class_mappings(current_loggedin_user_email_id, class_details, class_id);
+        if (user_type === 'TEACHER') {
+            await create_email_id_class_mappings(current_loggedin_user_email_id, class_details, class_id);
         }
         return class_id;
     }
 }
 
-const create_emailID_class_mappings = async (current_loggedin_user_email_id, class_details, class_id) => {
-            
+const create_email_id_class_mappings = async (current_loggedin_user_email_id, class_details, class_id) => {
+
     const class_emailIDs = class_details.email_ids.split(',');
-            
+
     //add owner current logged in user email id
     class_emailIDs.push(current_loggedin_user_email_id);
 
     //make sure there are no duplicate emailIDs
     const uniqueEmailIDs = [...new Set(class_emailIDs)];
 
-    uniqueEmailIDs.forEach( async (email_id, index) => {
-                const query = 'INSERT INTO tbl_user_class_mappings (class_id,user_email_id)'+
-                'VALUES (@classID, @emailID)';
-                const params = [
-                    { name: 'classID', type: sql.Int, value: class_id },
-                    { name: 'emailID', type: sql.VarChar, value: email_id }
-                ];
-                await queryDatabase(query, params);
-                });
+    uniqueEmailIDs.forEach(async (email_id, index) => {
+        const query = 'INSERT INTO tbl_user_class_mappings (class_id,user_email_id)' +
+            'VALUES (@classID, @emailID)';
+        const params = [
+            { name: 'classID', type: sql.Int, value: class_id },
+            { name: 'emailID', type: sql.VarChar, value: email_id }
+        ];
+        await queryDatabase(query, params);
+    });
+}
+
+const createAssignment = async (current_loggedin_user_email_id, assignment_details) => {
+    let users = await getUsers(current_loggedin_user_email_id);
+    if (users && users.length == 1) {
+        user_type = users[0].user_type;
+        teacher_id = users[0].id;
+
+        const query = 'INSERT INTO tbl_assignments (owner_email_id,class_name,class_id,title,details,duedate)' +
+            'VALUES (@owner_email_id, @class_name, @class_id, @title,@details, @duedate); SELECT SCOPE_IDENTITY() AS InsertedID;';
+
+        const params = [
+            { name: 'owner_email_id', type: sql.VarChar, value: current_loggedin_user_email_id },
+            { name: 'class_name', type: sql.VarChar, value: assignment_details.class_name },
+            { name: 'class_id', type: sql.VarChar, value: assignment_details.class_id },
+            { name: 'title', type: sql.VarChar, value: assignment_details.title },
+            { name: 'details', type: sql.VarChar, value: assignment_details.details },
+            { name: 'duedate', type: sql.VarChar, value: assignment_details.duedate }
+        ];
+
+        const result = await queryDatabase(query, params);
+        const assignment_id = result[0].InsertedID;
+
+        if (user_type === 'TEACHER') {
+            await create_email_id_assignemnt_mappings(current_loggedin_user_email_id, assignment_details.class_id,assignment_id);
+
+        } else if (user_type === 'STUDENT') {
+            const query = 'INSERT INTO tbl_user_assignment_mappings (assignment_id,user_email_id)' +
+                'VALUES (@assignment_id, @email_id)';
+            const params = [
+                { name: 'assignment_id', type: sql.Int, value: assignment_id },
+                { name: 'email_id', type: sql.VarChar, value: current_loggedin_user_email_id }
+            ];
+            await queryDatabase(query, params);
+        }
+
+        return assignment_id;
+    }
+
+}
+
+const create_email_id_assignemnt_mappings = async (current_loggedin_user_email_id, class_id, assignment_id) => {
+
+    const query = 'select * from tbl_user_class_mappings where class_id = @classID';
+    const params = [
+        { name: 'classID', type: sql.Int, value: class_id }
+    ];
+    const results = await queryDatabase(query, params);
+    results.forEach(async (result, index) => {
+
+        const query = 'INSERT INTO tbl_user_assignment_mappings (assignment_id,user_email_id)' +
+            'VALUES (@assignment_id, @email_id)';
+        const params = [
+            { name: 'assignment_id', type: sql.Int, value: assignment_id },
+            { name: 'email_id', type: sql.VarChar, value: result.email_id }
+        ];
+        await queryDatabase(query, params);
+    })
+
+}
+
+const createUser = async (current_loggedin_user_email_id, user_details) => {
+    if(user_details.user_type === 'TEACHER') {
+        if(user_details.verification_code != '309e919e74b9') {
+            return;
+        }
+    }
+    const query = 'INSERT INTO tbl_users (email_id,user_type)' +
+            'VALUES (@email_id, @user_type); SELECT SCOPE_IDENTITY() AS InsertedID;';
+    const params = [
+            { name: 'email_id', type: sql.VarChar, value: current_loggedin_user_email_id },
+            { name: 'user_type', type: sql.VarChar, value: user_details.user_type }
+    ];
+    
+    const result = await queryDatabase(query, params);
+    const user_id = result[0].InsertedID;
+
+    if(user_details.user_type === 'STUDENT') {
+        const defaultClass = {}
+        defaultClass.class_name = 'Miscellaneous';
+        defaultClass.email_ids = current_loggedin_user_email_id;
+
+        createClass(current_loggedin_user_email_id, defaultClass);
+    }
+
+    return user_id;
 }
 
 module.exports = {
-    getUsers, getClasses, getAssignments, createClass
+    getUsers, getClasses, getAssignments, createClass, createAssignment, createUser
 };
