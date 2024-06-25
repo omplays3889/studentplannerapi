@@ -61,6 +61,14 @@ app.post('/api/deleteclass', express.json(), async (req, res) => {
       res.json( "SUCCESS" );
       });
 
+app.post('/api/updateclass', express.json(), async (req, res) => {
+        const queryParams = req.query;
+        const body = req.body;
+        await deleteClass(queryParams.email_id, body);
+        const class_id = await createClass(queryParams.email_id, body);
+        res.json({ class_id });
+      });
+
 const PORT = 9999;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
