@@ -85,7 +85,8 @@ app.post('/api/updateclass', express.json(), async (req, res) => {
         res.json({ class_id });
       });
 
-const PORT = 9999;
+const PORT = process.env.PORT || 9999;
 app.listen(PORT, () => {
+    console.log(`Port provided is ${PORT}`);
     console.log(`Server is running on port ${PORT}`);
   });

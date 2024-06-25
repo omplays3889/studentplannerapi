@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/697366ea-c45d-44af-b393-c1ed5ad6683f/resourceGroups/studentplanner_group/providers/Microsoft.Web/sites/studentplannerapi",
+    "appService.deploySubpath": "."
+}
