@@ -162,6 +162,42 @@ const createUser = async (current_loggedin_user_email_id, user_details) => {
     return user_id;
 }
 
+const deleteAssignment = async (current_loggedin_user_email_id, assignment_details) => {
+    const query1 = 'delete from tbl_user_assignment_mappings where assignment_id = @assignmentID';
+    const params1 = [
+            { name: 'assignmentID', type: sql.Int, value: assignment_details.assignment_id }
+    ];
+    const result1 = await queryDatabase(query1, params1);
+
+    const query2 = 'delete from tbl_assignments where id = @assignmentID';
+    const params2 = [
+            { name: 'assignmentID', type: sql.Int, value: assignment_details.assignment_id }
+    ];
+    const result2 = await queryDatabase(query2, params2);
+
+    return;
+}
+
+const deleteClass = async (current_loggedin_user_email_id, class_details) => {
+
+    const query1 = 'delete from tbl_user_class_mappings where class_id = @classID';
+    const params1 = [
+            { name: 'classID', type: sql.Int, value: class_details.class_id }
+    ];
+    const result1 = await queryDatabase(query1, params1);
+
+    const query2 = 'delete from tbl_classes where id = @classID';
+    const params2 = [
+        { name: 'classID', type: sql.Int, value: class_details.class_id }
+    ];
+    const result2 = await queryDatabase(query2, params2);
+
+    return;
+}
+
+
+
+
 module.exports = {
-    getUsers, getClasses, getAssignments, createClass, createAssignment, createUser
+    getUsers, getClasses, getAssignments, createClass, createAssignment, createUser, deleteAssignment, deleteClass
 };

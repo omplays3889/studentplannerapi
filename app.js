@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
-const {getUsers, getClasses, getAssignments, createClass, createAssignment, createUser} = require('./process.js')
+const {getUsers, getClasses, getAssignments, createClass, createAssignment, createUser,
+  deleteAssignment, deleteClass
+} = require('./process.js')
 
 app.get('/api/getuser', async (req, res) => {
     const queryParams = req.query;
@@ -44,6 +46,20 @@ app.post('/api/createassignment', express.json(), async (req, res) => {
   const assignment_id = await createAssignment(queryParams.email_id, body);
   res.json({ assignment_id });
   });
+
+app.post('/api/deleteassignment', express.json(), async (req, res) => {
+    const queryParams = req.query;
+    const body = req.body;
+    await deleteAssignment(queryParams.email_id, body);
+    res.json( "SUCCESS" );
+    });
+
+app.post('/api/deleteclass', express.json(), async (req, res) => {
+      const queryParams = req.query;
+      const body = req.body;
+      await deleteClass(queryParams.email_id, body);
+      res.json( "SUCCESS" );
+      });
 
 const PORT = 9999;
 app.listen(PORT, () => {
