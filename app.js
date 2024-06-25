@@ -1,8 +1,24 @@
 const express = require('express');
+const basicAuth = require('basic-auth');
+
 const app = express();
+
 const {getUsers, getClasses, getAssignments, createClass, createAssignment, createUser,
   deleteAssignment, deleteClass
 } = require('./process.js')
+
+// Basic Authentication Middleware
+const authMiddleware = (req, res, next) => {
+  const user = basicAuth(req);
+
+  if (!user || user.name !== process.env.API_USERNAME || user.pass !== process.env.API_PASSWORD) {
+      res.set('WWW-Authenticate', 'Basic realm="studentforce"');
+      return res.status(401).send('Unauthorized');
+  }
+  next();
+};
+
+app.use(authMiddleware);
 
 app.get('/api/getuser', async (req, res) => {
     const queryParams = req.query;
