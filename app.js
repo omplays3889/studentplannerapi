@@ -1,5 +1,10 @@
 const express = require('express');
 const basicAuth = require('basic-auth');
+const cors = require('cors');
+
+const corsOptions = {
+  origin: 'http://localhost:3000', // Replace with your allowed origin
+};
 
 const app = express();
 
@@ -18,6 +23,7 @@ const authMiddleware = (req, res, next) => {
   next();
 };
 
+app.use(cors(corsOptions));
 app.use(authMiddleware);
 
 app.get('/api/getuser', async (req, res) => {
