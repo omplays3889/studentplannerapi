@@ -195,9 +195,33 @@ const deleteClass = async (current_loggedin_user_email_id, class_details) => {
     return;
 }
 
+const deleteAllData = async () => {
+    const query1 = 'delete from tbl_user_class_mappings';
+    const params1 = [];
+    const result1 = await queryDatabase(query1, params1);
+
+    const query2 = 'delete from tbl_classes';
+    const params2 = [];
+    const result2 = await queryDatabase(query2, params2);
+
+    const query3 = 'delete from tbl_user_assignment_mappings';
+    const params3 = [];
+    const result3 = await queryDatabase(query3, params3);
+
+    const query4 = 'delete from tbl_assignments';
+    const params4 = [];
+    const result4 = await queryDatabase(query4, params4);
+
+    const query5 = 'delete from tbl_users';
+    const params5 = [];
+    const result5 = await queryDatabase(query5, params5);
+    
+    return "SUCCESS";
+}
 
 
 
 module.exports = {
-    getUsers, getClasses, getAssignments, createClass, createAssignment, createUser, deleteAssignment, deleteClass
+    getUsers, getClasses, getAssignments, createClass, createAssignment,
+     createUser, deleteAssignment, deleteClass, deleteAllData
 };

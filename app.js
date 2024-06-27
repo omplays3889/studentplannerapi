@@ -61,6 +61,10 @@ app.post('/api/createclass', express.json(), async (req, res) => {
     res.json({ user_id });
   });
 
+  app.post('/api/deleteAllData', express.json(), async (req, res) => {
+    const response = await deleteAllData();
+    res.json({response });
+  });
   
 app.post('/api/createassignment', express.json(), async (req, res) => {
   const queryParams = req.query;
@@ -93,6 +97,7 @@ app.post('/api/updateclass', express.json(), async (req, res) => {
 
 const PORT = process.env.PORT || 9999;
 app.listen(PORT, () => {
+    console.log("delete data enpoint added");
     console.log(`Port provided is ${PORT}`);
     console.log(`Server is running on port ${PORT}`);
   });

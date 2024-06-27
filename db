@@ -34,16 +34,6 @@ CREATE TABLE tbl_user_class_mappings (
     CONSTRAINT PK_user_class_mapping PRIMARY KEY (class_id,user_email_id)
 );
 
-select * from tbl_assignments
-
-insert into tbl_user_assignment_mappings (assignment_id, user_email_id)
-values(1, 'omplays3889@gmail.com');
-
-insert into tbl_user_assignment_mappings (assignment_id, user_email_id)
-values(1, 'patel3889@mydusd.org');
-
-insert into tbl_user_assignment_mappings (assignment_id, user_email_id)
-values(1, 'cmaheta84@gmail.com');
 
 select * from tbl_user_assignment_mappings
 
