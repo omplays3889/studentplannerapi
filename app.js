@@ -9,7 +9,7 @@ const corsOptions = {
 const app = express();
 
 const {getUsers, getClasses, getAssignments, createClass, createAssignment, createUser,
-  deleteAssignment, deleteClass
+  deleteAssignment, deleteClass, deleteAllData
 } = require('./process.js')
 
 // Basic Authentication Middleware
