@@ -124,12 +124,13 @@ const create_email_id_assignemnt_mappings = async (current_loggedin_user_email_i
     const results = await queryDatabase(query, params);
     results.forEach(async (result, index) => {
 
-        if (result.email_id) {
+        if (result.user_email_id) {
+            console.log("email id mappings added for "+result.email_id);
             const query = 'INSERT INTO tbl_user_assignment_mappings (assignment_id,user_email_id)' +
                 'VALUES (@assignment_id, @email_id)';
             const params = [
                 { name: 'assignment_id', type: sql.Int, value: assignment_id },
-                { name: 'email_id', type: sql.VarChar, value: result.email_id }
+                { name: 'email_id', type: sql.VarChar, value: result.user_email_id }
             ];
             await queryDatabase(query, params);
         }
