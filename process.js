@@ -98,7 +98,7 @@ const createAssignment = async (current_loggedin_user_email_id, assignment_detai
         const assignment_id = result[0].InsertedID;
 
         if (user_type === 'TEACHER') {
-            await create_email_id_assignemnt_mappings(current_loggedin_user_email_id, assignment_details.class_id,assignment_id);
+            await create_email_id_assignemnt_mappings(current_loggedin_user_email_id, assignment_details.class_id, assignment_id);
 
         } else if (user_type === 'STUDENT') {
             const query = 'INSERT INTO tbl_user_assignment_mappings (assignment_id,user_email_id)' +
@@ -124,34 +124,36 @@ const create_email_id_assignemnt_mappings = async (current_loggedin_user_email_i
     const results = await queryDatabase(query, params);
     results.forEach(async (result, index) => {
 
-        const query = 'INSERT INTO tbl_user_assignment_mappings (assignment_id,user_email_id)' +
-            'VALUES (@assignment_id, @email_id)';
-        const params = [
-            { name: 'assignment_id', type: sql.Int, value: assignment_id },
-            { name: 'email_id', type: sql.VarChar, value: result.email_id }
-        ];
-        await queryDatabase(query, params);
+        if (result.email_id) {
+            const query = 'INSERT INTO tbl_user_assignment_mappings (assignment_id,user_email_id)' +
+                'VALUES (@assignment_id, @email_id)';
+            const params = [
+                { name: 'assignment_id', type: sql.Int, value: assignment_id },
+                { name: 'email_id', type: sql.VarChar, value: result.email_id }
+            ];
+            await queryDatabase(query, params);
+        }
     })
 
 }
 
 const createUser = async (current_loggedin_user_email_id, user_details) => {
-    if(user_details.user_type === 'TEACHER') {
-        if(user_details.verification_code != '309e919e74b9') {
+    if (user_details.user_type === 'TEACHER') {
+        if (user_details.verification_code != '309e919e74b9') {
             return;
         }
     }
     const query = 'INSERT INTO tbl_users (email_id,user_type)' +
-            'VALUES (@email_id, @user_type); SELECT SCOPE_IDENTITY() AS InsertedID;';
+        'VALUES (@email_id, @user_type); SELECT SCOPE_IDENTITY() AS InsertedID;';
     const params = [
-            { name: 'email_id', type: sql.VarChar, value: current_loggedin_user_email_id },
-            { name: 'user_type', type: sql.VarChar, value: user_details.user_type }
+        { name: 'email_id', type: sql.VarChar, value: current_loggedin_user_email_id },
+        { name: 'user_type', type: sql.VarChar, value: user_details.user_type }
     ];
-    
+
     const result = await queryDatabase(query, params);
     const user_id = result[0].InsertedID;
 
-    if(user_details.user_type === 'STUDENT') {
+    if (user_details.user_type === 'STUDENT') {
         const defaultClass = {}
         defaultClass.class_name = 'Miscellaneous';
         defaultClass.email_ids = current_loggedin_user_email_id;
@@ -165,13 +167,13 @@ const createUser = async (current_loggedin_user_email_id, user_details) => {
 const deleteAssignment = async (current_loggedin_user_email_id, assignment_details) => {
     const query1 = 'delete from tbl_user_assignment_mappings where assignment_id = @assignmentID';
     const params1 = [
-            { name: 'assignmentID', type: sql.Int, value: assignment_details.assignment_id }
+        { name: 'assignmentID', type: sql.Int, value: assignment_details.assignment_id }
     ];
     const result1 = await queryDatabase(query1, params1);
 
     const query2 = 'delete from tbl_assignments where id = @assignmentID';
     const params2 = [
-            { name: 'assignmentID', type: sql.Int, value: assignment_details.assignment_id }
+        { name: 'assignmentID', type: sql.Int, value: assignment_details.assignment_id }
     ];
     const result2 = await queryDatabase(query2, params2);
 
@@ -182,7 +184,7 @@ const deleteClass = async (current_loggedin_user_email_id, class_details) => {
 
     const query1 = 'delete from tbl_user_class_mappings where class_id = @classID';
     const params1 = [
-            { name: 'classID', type: sql.Int, value: class_details.class_id }
+        { name: 'classID', type: sql.Int, value: class_details.class_id }
     ];
     const result1 = await queryDatabase(query1, params1);
 
@@ -215,7 +217,7 @@ const deleteAllData = async () => {
     const query5 = 'delete from tbl_users';
     const params5 = [];
     const result5 = await queryDatabase(query5, params5);
-    
+
     return "SUCCESS";
 }
 
@@ -223,5 +225,5 @@ const deleteAllData = async () => {
 
 module.exports = {
     getUsers, getClasses, getAssignments, createClass, createAssignment,
-     createUser, deleteAssignment, deleteClass, deleteAllData
+    createUser, deleteAssignment, deleteClass, deleteAllData
 };
