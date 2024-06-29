@@ -97,7 +97,7 @@ app.post('/api/updateclass', express.json(), async (req, res) => {
 
 const PORT = process.env.PORT || 9999;
 app.listen(PORT, () => {
-    console.log("Delete data enpoint added");
+    console.log("Delete data enpoint added - trial 2");
     console.log(`Port provided is ${PORT}`);
     console.log(`Server is running on port ${PORT}`);
   });

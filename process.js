@@ -88,7 +88,7 @@ const createAssignment = async (current_loggedin_user_email_id, assignment_detai
         const params = [
             { name: 'owner_email_id', type: sql.VarChar, value: current_loggedin_user_email_id },
             { name: 'class_name', type: sql.VarChar, value: assignment_details.class_name },
-            { name: 'class_id', type: sql.VarChar, value: assignment_details.class_id },
+            { name: 'class_id', type: sql.Int, value: assignment_details.class_id },
             { name: 'title', type: sql.VarChar, value: assignment_details.title },
             { name: 'details', type: sql.VarChar, value: assignment_details.details },
             { name: 'duedate', type: sql.VarChar, value: assignment_details.duedate }
