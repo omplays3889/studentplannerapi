@@ -3,7 +3,11 @@ const basicAuth = require('basic-auth');
 const cors = require('cors');
 
 const corsOptions = {
-  origin: 'http://localhost:3000', // Replace with your allowed origin
+  origin: ['http://localhost:3000', 
+    'https://studentplanner.azurewebsites.net/',
+    'https://studentplanner.azurewebsites.net',
+    'https://www.students-planner.com/',
+    'https://www.students-planner.com']
 };
 
 const app = express();
@@ -97,7 +101,7 @@ app.post('/api/updateclass', express.json(), async (req, res) => {
 
 const PORT = process.env.PORT || 9999;
 app.listen(PORT, () => {
-    console.log("Delete data enpoint added - trial 2");
+    console.log("Cors updated - trial 4");
     console.log(`Port provided is ${PORT}`);
     console.log(`Server is running on port ${PORT}`);
   });
