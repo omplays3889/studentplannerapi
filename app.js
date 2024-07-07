@@ -16,6 +16,7 @@ const {getUsers, getClasses, getAssignments, createClass, createAssignment, crea
   deleteAssignment, deleteClass, deleteAllData
 } = require('./process.js')
 
+const {processReminders} = require('./scheduler.js')
 // Basic Authentication Middleware
 const authMiddleware = (req, res, next) => {
   const user = basicAuth(req);
