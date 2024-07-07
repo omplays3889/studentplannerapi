@@ -50,11 +50,12 @@ const processReminders = async () => {
         ];
         const email_ids = await queryDatabase(query, params);
         email_ids.forEach(async email_id => {
-            if (validator.isEmail(email_id.user_email_id)) {
-                console.log("Valid emailID : "+ email_id.user_email_id);
+            let email = email_id.user_email_id.trim();
+            if (validator.isEmail(email)) {
+                console.log("Valid emailID : "+ email);
                 const query = 'SELECT * from tbl_assignments where id in (SELECT DISTINCT TOP 100  assignment_id FROM tbl_user_assignment_mappings where user_email_id = @emailID)';
                 const params = [
-                    { name: 'emailID', type: sql.VarChar, value: email_id.user_email_id }
+                    { name: 'emailID', type: sql.VarChar, value: email}
                 ];
                 const assignments = await queryDatabase(query, params);
                 let html = '';
@@ -72,12 +73,10 @@ const processReminders = async () => {
                         html += assignemnt_formatted;
                         html += '\n\n';
                     });
-                    console.log(email_id.user_email_id);
-                    console.log(html);
-                    sendEmail(email_id.user_email_id, html);
+                    sendEmail(email, html);
                 }
             } else {
-                console.log("InValid emailID : "+ email_id.user_email_id);
+                console.log("InValid emailID : "+ email);
             }
         });
     } catch (e) {
