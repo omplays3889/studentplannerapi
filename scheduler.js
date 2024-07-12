@@ -28,7 +28,10 @@ const sendEmail = (email_id, email_body) => {
     });
 
     var mailOptions = {
-        from: 'help@students-planner.com',
+        from: {
+            name: 'Your Planner',
+            address: 'help@students-planner.com'
+        },
         to: email_id,
         subject: 'Your assignments reminder',
         html: email_body
@@ -45,21 +48,22 @@ const sendEmail = (email_id, email_body) => {
 
 const processReminders = async () => {
     try {
-        const query = 'SELECT DISTINCT TOP 12000 user_email_id FROM tbl_user_assignment_mappings order by user_email_id';
+        const query = 'SELECT DISTINCT TOP 12000 user_email_id FROM tbl_user_assignment_mappings where user_email_id not in '+
+        '(SELECT email_id from tbl_users where user_type = \'TEACHER\') order by user_email_id';
         const params = [
         ];
         const email_ids = await queryDatabase(query, params);
         email_ids.forEach(async email_id => {
-            let email = email_id.user_email_id.trim();
-            if (validator.isEmail(email)) {
-                console.log("Valid emailID : "+ email);
-                const query = 'SELECT * from tbl_assignments where id in (SELECT DISTINCT TOP 100  assignment_id FROM tbl_user_assignment_mappings where user_email_id = @emailID)';
+            let trimmed_email = email_id.user_email_id.trim();
+            if (validator.isEmail(trimmed_email)) {
+                console.log("Valid emailID : "+ trimmed_email);
+                const query = 'SELECT * from tbl_assignments where id in (SELECT DISTINCT TOP 100  assignment_id FROM tbl_user_assignment_mappings where user_email_id = @emailID) order by duedate';
                 const params = [
-                    { name: 'emailID', type: sql.VarChar, value: email}
+                    { name: 'emailID', type: sql.VarChar, value: email_id.user_email_id}
                 ];
                 const assignments = await queryDatabase(query, params);
                 let html = '';
-                console.log(assignments.length);
+                
                 if (assignments && assignments.length > 0) {
                     assignments.forEach(assignment => {
                         let title = email_format_title.replace('TITLE', assignment.title);
@@ -73,10 +77,10 @@ const processReminders = async () => {
                         html += assignemnt_formatted;
                         html += '\n\n';
                     });
-                    sendEmail(email, html);
+                    sendEmail(trimmed_email, html);
                 }
             } else {
-                console.log("InValid emailID : "+ email);
+                console.log("InValid emailID : "+ trimmed_email);
             }
         });
     } catch (e) {
