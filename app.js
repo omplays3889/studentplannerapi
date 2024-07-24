@@ -102,7 +102,7 @@ app.post('/api/updateclass', express.json(), async (req, res) => {
 
 const PORT = process.env.PORT || 9999;
 app.listen(PORT, () => {
-    console.log("Cors updated - trial 4");
+    console.log("App updated - version 5");
     console.log(`Port provided is ${PORT}`);
     console.log(`Server is running on port ${PORT}`);
   });

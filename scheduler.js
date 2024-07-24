@@ -68,7 +68,16 @@ const processReminders = async () => {
                     assignments.forEach(assignment => {
                         let title = email_format_title.replace('TITLE', assignment.title);
                         let details = email_format_detail.replace('DETAILS', assignment.details);
-                        let duedate = email_format_duedate.replace('DUEDATE', assignment.duedate)
+                        let formattedDate = new Date(assignment.duedate).toLocaleString('en-US', {
+                            timeZone: 'America/Los_Angeles',  // Specify PST time zone
+                            year: 'numeric',                  // Display full year
+                            month: 'short',                   // Display abbreviated month name (e.g., Jan, Feb, etc.)
+                            day: 'numeric',                   // Display day of the month
+                            hour: 'numeric',                  // Display hours in 12-hour format
+                            minute: 'numeric',                // Display minutes
+                            hour12: true                      // Use AM/PM
+                          })
+                        let duedate = email_format_duedate.replace('DUEDATE', formattedDate)
                         assignemnt_formatted =    
                         '<li>' +
                         '<div>' + duedate + title + details
@@ -88,7 +97,8 @@ const processReminders = async () => {
     }
 }
 
-cron.schedule('0 19 * * *', () => {
+cron.schedule('0 0 * * *', () => {
+ //cron.schedule('*/2 * * * *', () => {
     processReminders();
   }, {
     scheduled: true
