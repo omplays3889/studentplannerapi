@@ -4,6 +4,7 @@ const { queryDatabase } = require('./db.js');
 
 
 const getUsers = async (email_id) => {
+    email_id = email_id.trim();
     const query = 'SELECT * FROM tbl_users WHERE email_id = @emailID';
     const params = [
         { name: 'emailID', type: sql.VarChar, value: email_id }
@@ -13,6 +14,7 @@ const getUsers = async (email_id) => {
 }
 
 const getClasses = async (email_id) => {
+    email_id = email_id.trim();
     const query = 'SELECT * FROM tbl_classes WHERE teacher_email_id = @emailID order by class_name';
     const params = [
         { name: 'emailID', type: sql.VarChar, value: email_id }
@@ -22,6 +24,7 @@ const getClasses = async (email_id) => {
 }
 
 const getAssignments = async (email_id) => {
+    email_id = email_id.trim();
     const query = 'SELECT * FROM tbl_assignments WHERE id in (Select assignment_id from tbl_user_assignment_mappings WHERE user_email_id = @emailID) order by duedate';
     const params = [
         { name: 'emailID', type: sql.VarChar, value: email_id }
@@ -66,6 +69,7 @@ const create_email_id_class_mappings = async (current_loggedin_user_email_id, cl
     const uniqueEmailIDs = [...new Set(class_emailIDs)];
 
     uniqueEmailIDs.forEach(async (email_id, index) => {
+        email_id = email_id.trim();
         const query = 'INSERT INTO tbl_user_class_mappings (class_id,user_email_id)' +
             'VALUES (@classID, @emailID)';
         const params = [
@@ -125,12 +129,12 @@ const create_email_id_assignemnt_mappings = async (current_loggedin_user_email_i
     results.forEach(async (result, index) => {
 
         if (result.user_email_id) {
-            console.log("email id mappings added for "+result.email_id);
+            email_id = result.user_email_id.trim();
             const query = 'INSERT INTO tbl_user_assignment_mappings (assignment_id,user_email_id)' +
                 'VALUES (@assignment_id, @email_id)';
             const params = [
                 { name: 'assignment_id', type: sql.Int, value: assignment_id },
-                { name: 'email_id', type: sql.VarChar, value: result.user_email_id }
+                { name: 'email_id', type: sql.VarChar, value: email_id }
             ];
             await queryDatabase(query, params);
         }
