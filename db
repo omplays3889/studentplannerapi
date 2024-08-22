@@ -38,7 +38,7 @@ CREATE TABLE tbl_user_class_mappings (
 select * from tbl_user_assignment_mappings
 
 CREATE TABLE tbl_classes (
-    id INT IDENTITY(1, 1) PRIMARY KEY,
+    id BIGINT IDENTITY(1, 1) PRIMARY KEY,
     teacher_id INT,
     class_name varchar(255),
     teacher_email_id varchar(255),
@@ -58,7 +58,7 @@ Select * from tbl_classes;
 
 
 CREATE TABLE tbl_assignments (
-    id INT IDENTITY(1, 1) PRIMARY KEY,
+    id BIGINT IDENTITY(1, 1) PRIMARY KEY,
     owner_email_id varchar(255),
     class_name varchar(255),
     class_id INT,
