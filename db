@@ -1,6 +1,7 @@
-delete from tbl_user_assignment_mappings where assignment_id = 1;
-delete from tbl_assignments where assignment_id = 1;
-
+delete from tbl_user_assignment_mappings;
+delete from tbl_user_class_mappings;
+delete from tbl_assignments;
+delete from tbl_users;
 
 CREATE TABLE tbl_users (
     id INT IDENTITY(1, 1) PRIMARY KEY,
@@ -11,13 +12,6 @@ CREATE TABLE tbl_users (
     user_type varchar(255),
     usa_state varchar(255)
 );
-
-INSERT INTO tbl_users (last_name,first_name,email_id,org,user_type,usa_state)
-VALUES ('Patel', 'OM', 'patel3889@mydusd.org', 'mydusd.org', 'STUDENT', 'California');
-
-
-
-Select * from tbl_users;
 
 CREATE TABLE tbl_user_assignment_mappings (
     assignment_id INT ,
@@ -44,18 +38,6 @@ CREATE TABLE tbl_classes (
     teacher_email_id varchar(255),
     email_ids varchar(MAX)
 );
-
-
-
-INSERT INTO tbl_classes (teacher_id,class_name,teacher_email_id,email_ids)
-VALUES ('2', 'History', 'omplays3889@gmail.com', 'patel3889@mydusd.org, cmaheta84@gmail.com');
-
-
-Select * from tbl_classes;
-
-
-
-
 
 CREATE TABLE tbl_assignments (
     id BIGINT IDENTITY(1, 1) PRIMARY KEY,

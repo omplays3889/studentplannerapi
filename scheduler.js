@@ -1,4 +1,6 @@
 
+require('dotenv').config();
+
 const nodemailer = require('nodemailer');
 const sql = require("mssql");
 const validator = require('validator');
@@ -6,31 +8,24 @@ const cron = require('node-cron');
 
 const { queryDatabase } = require('./db.js');
 
-const smtpHost = 'smtppro.zoho.com';
-const smtpPort = 465;
-const smtpUser = 'help@students-planner.com';
-const smtpPass = '!!T@FGDBBCv4kad';
-
 const email_format_duedate = '<div style="margin-left: 14px; font-size: 14px; color: coral; font-weight: bold;">DUEDATE</div>';
 const email_format_detail = '<p style="font-size: 14px;">DETAILS</p><span>--------------------</span><span>--------------------</span>'
 const email_format_title =  '<p style="font-size: 14px;">TITLE</p>';    
 
 const sendEmail = (email_id, email_body) => {
 
-    let transporter = nodemailer.createTransport({
-        host: smtpHost,
-        port: smtpPort,
-        secure: true, // true for 465, false for other ports
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
         auth: {
-            user: smtpUser,
-            pass: smtpPass
-        }
-    });
+          user: 'omplays3889@gmail.com',
+          pass: process.env.EMAIL_APP_PASSWORD, // Not your Gmail password
+        },
+      });
 
     var mailOptions = {
         from: {
             name: 'Your Planner',
-            address: 'help@students-planner.com'
+            address: 'omplays3889@gmail.com'
         },
         to: email_id,
         subject: 'Your assignments reminder',

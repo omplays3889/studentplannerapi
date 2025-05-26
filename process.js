@@ -158,13 +158,11 @@ const createUser = async (current_loggedin_user_email_id, user_details) => {
     const result = await queryDatabase(query, params);
     const user_id = result[0].InsertedID;
 
-    if (user_details.user_type === 'STUDENT') {
-        const defaultClass = {}
-        defaultClass.class_name = 'Miscellaneous';
-        defaultClass.email_ids = current_loggedin_user_email_id;
+    const defaultClass = {}
+    defaultClass.class_name = 'Independent';
+    defaultClass.email_ids = current_loggedin_user_email_id;
 
-        createClass(current_loggedin_user_email_id, defaultClass);
-    }
+    createClass(current_loggedin_user_email_id, defaultClass);
 
     return user_id;
 }
