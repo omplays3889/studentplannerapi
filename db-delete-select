@@ -1,0 +1,8 @@
+delete from tbl_user_assignment_mappings;
+delete from tbl_user_class_mappings;
+delete from tbl_assignments;
+delete from tbl_users;
+delete from tbl_classes;
+
+select * from tbl_assignments;
+

@@ -99,7 +99,7 @@ cron.schedule('0 0 * * *', () => {
     scheduled: true
   });
   
-console.log('Scheduler is running...');
+console.log('Scheduler is running 0 0...');
 
 
 module.exports = { sendEmail, processReminders };

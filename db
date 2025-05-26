@@ -19,17 +19,12 @@ CREATE TABLE tbl_user_assignment_mappings (
     CONSTRAINT PK_user_assignment_mapping PRIMARY KEY (assignment_id,user_email_id)
 );
 
-select * from tbl_assignments;
-
 
 CREATE TABLE tbl_user_class_mappings (
     class_id INT ,
     user_email_id varchar(255),
     CONSTRAINT PK_user_class_mapping PRIMARY KEY (class_id,user_email_id)
 );
-
-
-select * from tbl_user_assignment_mappings
 
 CREATE TABLE tbl_classes (
     id BIGINT IDENTITY(1, 1) PRIMARY KEY,
@@ -48,9 +43,4 @@ CREATE TABLE tbl_assignments (
     details VARCHAR(8000),
     duedate varchar(255)
 );
-
-INSERT INTO tbl_assignments (owner_email_id,class_name,class_id,title,details,duedate)
-VALUES ('omplays3889@gmail.com', 'History', '1', 'Brochure','A brochure of sailing west!', '9/7/2024');
-
-
 
