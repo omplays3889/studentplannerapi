@@ -43,8 +43,7 @@ const sendEmail = (email_id, email_body) => {
 
 const processReminders = async () => {
     try {
-        const query = 'SELECT DISTINCT TOP 12000 user_email_id FROM tbl_user_assignment_mappings where user_email_id not in '+
-        '(SELECT email_id from tbl_users where user_type = \'TEACHER\') order by user_email_id';
+        const query = 'SELECT DISTINCT TOP 12000 user_email_id FROM tbl_user_assignment_mappings';
         const params = [
         ];
         const email_ids = await queryDatabase(query, params);
@@ -93,13 +92,12 @@ const processReminders = async () => {
 }
 
 cron.schedule('0 0 * * *', () => {
- //cron.schedule('*/2 * * * *', () => {
     processReminders();
   }, {
     scheduled: true
   });
   
-console.log('Scheduler is running 0 0...');
+console.log('Scheduler is running 0 0 cron...');
 
 
 module.exports = { sendEmail, processReminders };
