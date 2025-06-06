@@ -1,0 +1,4 @@
+
+
+
+SELECT * from tbl_assignments where id in (SELECT DISTINCT TOP 100  assignment_id FROM tbl_user_assignment_mappings where user_email_id = 'omplays3889@gmail.com') order by duedate;

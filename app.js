@@ -1,6 +1,7 @@
 const express = require('express');
 const basicAuth = require('basic-auth');
 const cors = require('cors');
+require('./scheduler.js')
 
 const corsOptions = {
   origin: ['http://localhost:3000', 
@@ -11,14 +12,20 @@ const corsOptions = {
 };
 
 const app = express();
-
-const {getUsers, getClasses, getAssignments, createClass, createAssignment, createUser,
+const {unsubscribe, getUsers, getClasses, getAssignments, createClass, createAssignment, createUser,
   deleteAssignment, deleteClass, deleteAllData
 } = require('./process.js')
 
-const {processReminders} = require('./scheduler.js')
 // Basic Authentication Middleware
 const authMiddleware = (req, res, next) => {
+  if (req.path === '/api/unsubscribe') {
+    return next();
+  }
+
+  if (req.path === '/api/health') {
+    return next();
+  }
+
   const user = basicAuth(req);
 
   if (!user || user.name !== process.env.API_USERNAME || user.pass !== process.env.API_PASSWORD) {
@@ -30,6 +37,18 @@ const authMiddleware = (req, res, next) => {
 
 app.use(cors(corsOptions));
 app.use(authMiddleware);
+
+app.get('/api/health', async (req, res) => {
+  console.log("ping received");
+  res.end();
+});
+
+app.get('/api/unsubscribe', async (req, res) => {
+  const queryParams = req.query;
+  let result =  await unsubscribe(queryParams.token);
+  res.write(result);
+  res.end();
+});
 
 app.get('/api/getuser', async (req, res) => {
     const queryParams = req.query;

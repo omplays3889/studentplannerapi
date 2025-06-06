@@ -1,7 +1,40 @@
+require('dotenv').config();
 const sql = require("mssql");
 const http = require('http');
+const jwt = require('jsonwebtoken');
 const { queryDatabase } = require('./db.js');
 
+const SECRET_KEY = process.env.JWT_UNSUBSCRIBE_TOKEN_KEY;
+
+function decodeUnsubscribeToken(token) {
+    try {
+      const decoded = jwt.verify(token, SECRET_KEY);
+      return { email: decoded.email };
+    } catch (err) {
+      if (err.name === 'TokenExpiredError') return { error: 'expired' };
+      return { error: 'invalid' };
+    }
+  }
+
+const unsubscribe = async (token) => {
+    const result = decodeUnsubscribeToken(token);
+
+    if (result.error === 'expired') {
+        return 'Token has expired.';
+    } else if (result.error === 'invalid') {
+        return 'Invalid token.';
+    }
+
+    let email_id = result.email;
+    email_id = email_id.trim();
+    const queryDelete = 'delete FROM tbl_user_assignment_mappings WHERE user_email_id = @emailID';
+    
+    const params = [
+        { name: 'emailID', type: sql.VarChar, value: email_id }
+    ];
+    await queryDatabase(queryDelete, params);
+    return 'You have unsubscribed successfully.';
+}
 
 const getUsers = async (email_id) => {
     email_id = email_id.trim();
@@ -227,6 +260,6 @@ const deleteAllData = async () => {
 
 
 module.exports = {
-    getUsers, getClasses, getAssignments, createClass, createAssignment,
+    unsubscribe, getUsers, getClasses, getAssignments, createClass, createAssignment,
     createUser, deleteAssignment, deleteClass, deleteAllData
 };
