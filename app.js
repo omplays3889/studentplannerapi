@@ -5,8 +5,8 @@ require('./scheduler.js')
 
 const corsOptions = {
   origin: ['http://localhost:3000', 
-    'https://studentplanner.azurewebsites.net/',
-    'https://studentplanner.azurewebsites.net',
+    'https://my-planner.azurewebsites.net/',
+    'https://my-planner.azurewebsites.net',
     'https://www.students-planner.com/',
     'https://www.students-planner.com']
 };

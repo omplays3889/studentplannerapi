@@ -139,13 +139,22 @@ cron.schedule('0 0 * * *', () => {
 });
 
 cron.schedule('*/5 * * * *', () => {
-    axios.get("https://my-planner-api-b2cvagfzdqavhca3.westus2-01.azurewebsites.net/api/health")
-      .then(() => console.log("pinged app"))
-      .catch(err => console.error("ping failed", err));
+     axios.get("https://my-planner-api-b2cvagfzdqavhca3.westus2-01.azurewebsites.net/api/getuser?email_id=cmaheta84@gmail.com", {
+        auth: {
+          username: process.env.API_USERNAME,
+          password: process.env.API_PASSWORD
+        }
+      })
+      .then(() => console.log("pinged api app"))
+      .catch(err => console.error("ping api failed", err));
+
+      axios.get("https://my-planner.azurewebsites.net")
+      .then(() => console.log("pinged ui app"))
+      .catch(err => console.error("ping ui failed", err));
   }, {
     scheduled: true
-}); // every 1 mins
+});
 
-console.log('Scheduler is running ...');
+console.log('Scheduler is running with ping version...');
 
 module.exports = { sendEmail, processReminders };
