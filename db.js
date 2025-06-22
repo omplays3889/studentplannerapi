@@ -12,8 +12,8 @@ const config = {
         trustServerCertificate: true // Use this to trust the server certificate (self-signed certificates)
     },
     // Setting timeouts
-    connectionTimeout: 20000, // 20 seconds
-    requestTimeout: 30000 // 30 seconds
+    connectionTimeout: 120000, // 120 seconds
+    requestTimeout: 120000 // 120 seconds
 };
 
 async function connectWithRetry(retries = 5, delay = 1000) {

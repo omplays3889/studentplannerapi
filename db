@@ -1,7 +1,6 @@
-delete from tbl_user_assignment_mappings;
-delete from tbl_user_class_mappings;
-delete from tbl_assignments;
-delete from tbl_users;
+
+CREATE DATABASE my_planner_db;
+USE my_planner_db;
 
 CREATE TABLE tbl_users (
     id INT IDENTITY(1, 1) PRIMARY KEY,
