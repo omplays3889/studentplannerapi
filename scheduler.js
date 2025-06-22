@@ -10,9 +10,24 @@ const axios = require("axios");
 
 const { queryDatabase } = require('./db.js');
 
-const email_format_duedate = '<li style="font-size: 14px; color: coral; font-weight: bold;">DUEDATE</li>';
-const email_format_detail = '<p style="margin-left:55px; font-size: 14px; width: 50%;">DETAILS</p>';
-const email_format_title = '<p style="margin-left:55px; font-size: 14px; width: 50%;">TITLE</p>';
+const zone_legends='<table style="margin-bottom: 16px;"> \
+<tr> \
+  <td style="padding: 6px 16px; background-color: indianred; color: white; border-radius: 999px; font-size: 10px; font-family: sans-serif;"> \
+    Red Zone: Past Due Date \
+  </td> \
+  <td style="width: 12px;"></td> \
+  <td style="padding: 6px 16px; background-color: coral; color: white; border-radius: 999px; font-size: 10px; font-family: sans-serif;"> \
+    Coral Zone: Due in 1-5 days \
+  </td> \
+  <td style="width: 12px;"></td> \
+  <td style="padding: 6px 16px; background-color: rgb(21, 100, 255); color: white; border-radius: 999px; font-size: 10px; font-family: sans-serif;"> \
+    Blue Zone: Due in 5+ days \
+  </td> \
+</tr> \
+</table>';
+const email_format_duedate = '<div style="font-size: 14px; margin-left: 55px; color: coral; margin-bottom: 8px; font-weight: bold;">DUEDATE</div>';
+const email_format_title = '<p style="margin-left: 55px; font-size: 14px; width: 50%; margin-top: 0; margin-bottom: 2px;">TITLE</p>';
+const email_format_detail = '<p style="margin-left: 55px; font-size: 14px; color: gray; width: 50%; margin-top: 0; margin-bottom: 8px;">DETAILS</p>';
 const SECRET_KEY = process.env.JWT_UNSUBSCRIBE_TOKEN_KEY;
 
 const changeColor = (duedate, email_txt_duedate) => {
@@ -21,14 +36,12 @@ const changeColor = (duedate, email_txt_duedate) => {
 
     const diffInDays = dueDate.diff(now, 'days').days;
 
-    if (diffInDays < 0 && diffInDays >= -7) {
-        return email_txt_duedate.replace("coral", "red")
-    } else if (diffInDays >= 0 && diffInDays <= 3) {
+    if (diffInDays <= 0 && diffInDays >= -5) {
+        return email_txt_duedate.replace("coral", "indianred")
+    } else if (diffInDays > 0 && diffInDays <= 5) {
         return email_txt_duedate.replace("coral", "coral")
-    } else if (diffInDays > 3 && diffInDays <= 7) {
-        return email_txt_duedate.replace("coral", "green")
-    } else if (diffInDays > 7) {
-        return email_txt_duedate.replace("coral", "blue")
+    } else if (diffInDays > 5) {
+        return email_txt_duedate.replace("coral", "rgb(21, 100, 255)")
     } else {
         return "NONE"
     }
@@ -47,6 +60,7 @@ const sendEmail = (email_id, email_body) => {
     const token = generateUnsubscribeToken(email_id);
     const unsubscribeLink = `https://my-planner-api-b2cvagfzdqavhca3.westus2-01.azurewebsites.net/api/unsubscribe?token=${token}`;
 
+    email_body += zone_legends;
     email_body += `<div style="margin-left:55px;font-size:11px;"> Too many email reminders? <a href="${unsubscribeLink}" style="font-size:11px;">Unsubscribe</a> </div>`;
 
     const transporter = nodemailer.createTransport({
@@ -76,6 +90,18 @@ const sendEmail = (email_id, email_body) => {
     });
 }
 
+const cleanUp = async () => {
+
+    let query = 'delete from tbl_assignments WHERE TRY_CAST(LEFT(duedate, 19) AS DATETIME) < DATEADD(DAY, -5, GETDATE())';
+    await queryDatabase(query, null);
+
+    query = 'delete from tbl_assignments where class_id not in (select DISTINCT TOP 1200 id from tbl_classes)';
+    await queryDatabase(query, null);
+
+    query = 'delete from tbl_user_assignment_mappings where assignment_id not in (select DISTINCT TOP 1200 id from tbl_assignments)';
+    await queryDatabase(query, null);
+
+}
 const processReminders = async () => {
     try {
         const query = 'SELECT DISTINCT TOP 12000 user_email_id FROM tbl_user_assignment_mappings';
@@ -117,7 +143,7 @@ const processReminders = async () => {
                                 '</div>' +
                                 '</div>';
                             html += assignemnt_formatted;
-                            html += '\n\n';
+                            html += '<hr style="border: none; border-top: 1px solid #ddd; margin: 16px 0; width: 50%;">';
                         }
                     });
                     sendEmail(trimmed_email, html);
@@ -138,7 +164,14 @@ cron.schedule('0 0 * * *', () => {
     scheduled: true
 });
 
-cron.schedule('*/5 * * * *', () => {
+cron.schedule('5 5 * * *', () => {
+    console.log("cleanUp triggered");
+    cleanUp();
+}, {
+    scheduled: true
+});
+
+cron.schedule('*/15 * * * *', () => {
      axios.get("https://my-planner-api-b2cvagfzdqavhca3.westus2-01.azurewebsites.net/api/getuser?email_id=cmaheta84@gmail.com", {
         auth: {
           username: process.env.API_USERNAME,

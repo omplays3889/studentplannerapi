@@ -222,13 +222,19 @@ const deleteClass = async (current_loggedin_user_email_id, class_details) => {
     const params1 = [
         { name: 'classID', type: sql.Int, value: class_details.class_id }
     ];
-    const result1 = await queryDatabase(query1, params1);
+    await queryDatabase(query1, params1);
 
     const query2 = 'delete from tbl_classes where id = @classID';
     const params2 = [
         { name: 'classID', type: sql.Int, value: class_details.class_id }
     ];
-    const result2 = await queryDatabase(query2, params2);
+    await queryDatabase(query2, params2);
+
+    const query3 = 'delete from tbl_assignments where class_id = @classID';
+    await queryDatabase(query3, params2);
+
+    const query4 = 'delete from tbl_user_assignment_mappings where assignment_id not in (select DISTINCT TOP 1200 id from tbl_assignments)';
+    await queryDatabase(query4, null);
 
     return;
 }

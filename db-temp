@@ -1,4 +1,22 @@
 
+USE my_planner_db;
+
+SELECT DISTINCT TOP 12000 user_email_id FROM tbl_user_assignment_mappings;
+
+SELECT * from tbl_assignments where id in (SELECT DISTINCT TOP 100  assignment_id FROM 
+tbl_user_assignment_mappings where user_email_id = 'cmaheta84@gmail.com') order by duedate;
+
+select * from tbl_user_assignment_mappings;
+
+delete from tbl_assignments where class_id not in (select DISTINCT TOP 1200 id from tbl_classes);
+select * from tbl_user_assignment_mappings where assignment_id not in 
+(select DISTINCT TOP 1200 id from tbl_assignments);
+
+delete from tbl_assignments where duedate < 7d;
+
+SELECT TOP 5 duedate FROM tbl_assignments;
+
+DELETE FROM tbl_assignments
+WHERE TRY_CAST(LEFT(duedate, 19) AS DATETIME) < DATEADD(DAY, -5, GETDATE());
 
 
-SELECT * from tbl_assignments where id in (SELECT DISTINCT TOP 100  assignment_id FROM tbl_user_assignment_mappings where user_email_id = 'omplays3889@gmail.com') order by duedate;
