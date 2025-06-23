@@ -48,7 +48,7 @@ const getUsers = async (email_id) => {
 
 const getClasses = async (email_id) => {
     email_id = email_id.trim();
-    const query = 'SELECT * FROM tbl_classes WHERE teacher_email_id = @emailID order by class_name';
+    const query = 'SELECT * FROM tbl_classes WHERE id in (select class_id from tbl_user_class_mappings WHERE user_email_id = @emailID) order by class_name';
     const params = [
         { name: 'emailID', type: sql.VarChar, value: email_id }
     ];

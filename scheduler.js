@@ -170,7 +170,7 @@ const processReminders = async () => {
     }
 }
 
-cron.schedule('*/1 * * * *', () => {
+cron.schedule('0 0 * * *', () => {
     console.log("processReminders triggered");
     processReminders();
 }, {
