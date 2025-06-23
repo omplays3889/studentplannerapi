@@ -10,24 +10,37 @@ const axios = require("axios");
 
 const { queryDatabase } = require('./db.js');
 
-const zone_legends='<table style="margin-bottom: 16px;"> \
+const zone_legends='<table style="margin-bottom: 16px; margin-left: 5px; width:290px;"> \
 <tr> \
-  <td style="padding: 6px 16px; background-color: indianred; color: white; border-radius: 999px; font-size: 10px; font-family: sans-serif;"> \
-    Red Zone: Past Due Date \
+  <td style="padding-left: 27px; font-size: 11px; font-family: sans-serif;"> \
+    Red \
   </td> \
-  <td style="width: 12px;"></td> \
-  <td style="padding: 6px 16px; background-color: coral; color: white; border-radius: 999px; font-size: 10px; font-family: sans-serif;"> \
-    Coral Zone: Due in 1-5 days \
+  <td style="width: 5px;"></td> \
+  <td style="padding-left: 27px; font-size: 11px; font-family: sans-serif;"> \
+    Coral\
   </td> \
-  <td style="width: 12px;"></td> \
-  <td style="padding: 6px 16px; background-color: rgb(21, 100, 255); color: white; border-radius: 999px; font-size: 10px; font-family: sans-serif;"> \
-    Blue Zone: Due in 5+ days \
+  <td style="width: 5px;"></td> \
+  <td style="padding-left: 27px; font-size: 11px; font-family: sans-serif;"> \
+    Blue\
+  </td> \
+</tr> \
+<tr> \
+  <td style="padding: 6px 10px; background-color: indianred; color: white; border-radius: 999px; font-size: 9px; font-family: sans-serif;"> \
+    Past Due Date\
+  </td> \
+  <td style="width: 5px;"></td> \
+  <td style="padding: 6px 10px; background-color: coral; color: white; border-radius: 999px; font-size: 9px; font-family: sans-serif;"> \
+    Due in 1-5 days\
+  </td> \
+  <td style="width: 5px;"></td> \
+  <td style="padding: 6px 10px; background-color: rgb(21, 100, 255); color: white; border-radius: 999px; font-size: 9px; font-family: sans-serif;"> \
+    Due in 5+ days\
   </td> \
 </tr> \
 </table>';
-const email_format_duedate = '<div style="font-size: 14px; margin-left: 55px; color: coral; margin-bottom: 8px; font-weight: bold;">DUEDATE</div>';
-const email_format_title = '<p style="margin-left: 55px; font-size: 14px; width: 50%; margin-top: 0; margin-bottom: 2px;">TITLE</p>';
-const email_format_detail = '<p style="margin-left: 55px; font-size: 14px; color: gray; width: 50%; margin-top: 0; margin-bottom: 8px;">DETAILS</p>';
+const email_format_duedate = '<div style="font-size: 14px; margin-left: 75px; color: coral; margin-bottom: 8px; font-weight: bold;">DUEDATE</div>';
+const email_format_title = '<p style="margin-left: 75px; font-size: 14px; width: 50%; margin-top: 0; margin-bottom: 2px;">TITLE</p>';
+const email_format_detail = '<p style="margin-left: 75px; font-size: 14px; color: gray; width: 50%; margin-top: 0; margin-bottom: 8px;">DETAILS</p>';
 const SECRET_KEY = process.env.JWT_UNSUBSCRIBE_TOKEN_KEY;
 
 const changeColor = (duedate, email_txt_duedate) => {
@@ -61,7 +74,7 @@ const sendEmail = (email_id, email_body) => {
     const unsubscribeLink = `https://my-planner-api-b2cvagfzdqavhca3.westus2-01.azurewebsites.net/api/unsubscribe?token=${token}`;
 
     email_body += zone_legends;
-    email_body += `<div style="margin-left:55px;font-size:11px;"> Too many email reminders? <a href="${unsubscribeLink}" style="font-size:11px;">Unsubscribe</a> </div>`;
+    email_body += `<div style="margin-left:12px;font-size:11px;">Want to stop receiving email reminders? <a href="${unsubscribeLink}" style="font-size:11px;">Unsubscribe </a> </div>`;
 
     const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -143,7 +156,7 @@ const processReminders = async () => {
                                 '</div>' +
                                 '</div>';
                             html += assignemnt_formatted;
-                            html += '<hr style="border: none; border-top: 1px solid #ddd; margin: 16px 0; width: 50%;">';
+                            html += '<hr style="border: none; border-top: 1px solid #ddd; margin: 16px 0; margin-left: 5px; width: 290px;">';
                         }
                     });
                     sendEmail(trimmed_email, html);
@@ -157,7 +170,7 @@ const processReminders = async () => {
     }
 }
 
-cron.schedule('0 0 * * *', () => {
+cron.schedule('*/1 * * * *', () => {
     console.log("processReminders triggered");
     processReminders();
 }, {
