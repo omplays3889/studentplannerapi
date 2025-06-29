@@ -5,10 +5,10 @@ require('./scheduler.js')
 
 const corsOptions = {
   origin: ['http://localhost:3000', 
-    'https://my-planner.azurewebsites.net/',
-    'https://my-planner.azurewebsites.net',
-    'https://www.students-planner.com/',
-    'https://www.students-planner.com']
+    'https://witty-stone-06908e31e.2.azurestaticapps.net/',
+    'https://witty-stone-06908e31e.2.azurestaticapps.net',
+    'https://www.students-planner.net/',
+    'https://www.students-planner.net']
 };
 
 const app = express();
