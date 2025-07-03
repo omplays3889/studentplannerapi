@@ -185,16 +185,16 @@ cron.schedule('5 5 * * *', () => {
 });
 
 cron.schedule('*/15 * * * *', () => {
-     axios.get("https://my-planner-api-b2cvagfzdqavhca3.westus2-01.azurewebsites.net/api/getuser?email_id=cmaheta84@gmail.com", {
+     axios.get("https://my-planner-api-b2cvagfzdqavhca3.westus2-01.azurewebsites.net/api/health", {
         auth: {
           username: process.env.API_USERNAME,
           password: process.env.API_PASSWORD
         }
       })
-      .then(() => console.log("pinged api app"))
+      .then(() => console.log("pinged api health endpoint"))
       .catch(err => console.error("ping api failed", err));
 
-      axios.get("https://my-planner.azurewebsites.net")
+      axios.get("https://www.students-planner.net")
       .then(() => console.log("pinged ui app"))
       .catch(err => console.error("ping ui failed", err));
   }, {
