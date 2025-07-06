@@ -199,6 +199,6 @@ cron.schedule('*/15 * * * *', () => {
     scheduled: true
 });
 
-console.log('Scheduler is running with ping version...');
+console.log('Scheduler is running with postgresql...');
 
 module.exports = { sendEmail, processReminders };

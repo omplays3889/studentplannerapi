@@ -7,6 +7,10 @@ const corsOptions = {
   origin: ['http://localhost:3000', 
     'https://witty-stone-06908e31e.2.azurestaticapps.net/',
     'https://witty-stone-06908e31e.2.azurestaticapps.net',
+    'https://www.witty-stone-06908e31e.2.azurestaticapps.net/',
+    'https://www.witty-stone-06908e31e.2.azurestaticapps.net',
+    'https://students-planner.net/',
+    'https://students-planner.net',
     'https://www.students-planner.net/',
     'https://www.students-planner.net']
 };
