@@ -12,8 +12,8 @@ const corsOptions = {
 };
 
 const app = express();
-const {unsubscribe, getUsers, getClasses, getAssignments, createClass, createAssignment, createUser,
-  deleteAssignment, deleteClass, deleteAllData
+const {unsubscribe, getUsers, getGroups, getAssignments, createGroup, createAssignment, createUser,
+  deleteAssignment, deleteGroup, deleteAllData
 } = require('./process.js')
 
 // Basic Authentication Middleware
@@ -57,9 +57,9 @@ app.get('/api/getuser', async (req, res) => {
     res.end();
 });
 
-app.get('/api/obtainclasses', async (req, res) => {
+app.get('/api/obtaingroups', async (req, res) => {
     const queryParams = req.query;
-    const results = await getClasses(queryParams.email_id);
+    const results = await getGroups(queryParams.email_id);
     res.write(JSON.stringify(results));
     res.end();
 });
@@ -71,11 +71,11 @@ app.get('/api/obtainassignments', async (req, res) => {
     res.end();
 });
 
-app.post('/api/createclass', express.json(), async (req, res) => {
+app.post('/api/creategroup', express.json(), async (req, res) => {
     const queryParams = req.query;
     const body = req.body;
-    const class_id = await createClass(queryParams.email_id, body);
-    res.json({ class_id });
+    const group_id = await createGroup(queryParams.email_id, body);
+    res.json({ group_id });
   });
 
   app.post('/api/createuser', express.json(), async (req, res) => {
@@ -104,19 +104,19 @@ app.post('/api/deleteassignment', express.json(), async (req, res) => {
     res.json( "SUCCESS" );
     });
 
-app.post('/api/deleteclass', express.json(), async (req, res) => {
+app.post('/api/deletegroup', express.json(), async (req, res) => {
       const queryParams = req.query;
       const body = req.body;
-      await deleteClass(queryParams.email_id, body);
+      await deleteGroup(body);
       res.json( "SUCCESS" );
       });
 
-app.post('/api/updateclass', express.json(), async (req, res) => {
+app.post('/api/updategroup', express.json(), async (req, res) => {
         const queryParams = req.query;
         const body = req.body;
-        await deleteClass(queryParams.email_id, body);
-        const class_id = await createClass(queryParams.email_id, body);
-        res.json({ class_id });
+        await deleteGroup(body);
+        const group_id = await createGroup(queryParams.email_id, body);
+        res.json({ group_id });
       });
 
 const PORT = process.env.PORT || 9999;

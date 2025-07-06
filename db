@@ -1,45 +1,45 @@
-
-CREATE DATABASE my_planner_db;
-USE my_planner_db;
-
 CREATE TABLE tbl_users (
-    id INT IDENTITY(1, 1) PRIMARY KEY,
-    last_name varchar(255),
-    first_name varchar(255),
-    email_id varchar(255),
-    org varchar(255),
-    user_type varchar(255),
-    usa_state varchar(255)
+    id SERIAL PRIMARY KEY,
+    last_name VARCHAR(255),
+    first_name VARCHAR(255),
+    email_id VARCHAR(255),
+    org VARCHAR(255),
+    user_type VARCHAR(255),
+    usa_state VARCHAR(255)
 );
+commit;
 
 CREATE TABLE tbl_user_assignment_mappings (
-    assignment_id INT ,
-    user_email_id varchar(255),
-    CONSTRAINT PK_user_assignment_mapping PRIMARY KEY (assignment_id,user_email_id)
+    assignment_id INT NOT NULL,
+    user_email_id VARCHAR(255) NOT NULL,
+    CONSTRAINT PK_user_assignment_mapping PRIMARY KEY (assignment_id, user_email_id)
 );
+commit;
 
-
-CREATE TABLE tbl_user_class_mappings (
-    class_id INT ,
+CREATE TABLE tbl_user_group_mappings (
+    group_id INT ,
     user_email_id varchar(255),
-    CONSTRAINT PK_user_class_mapping PRIMARY KEY (class_id,user_email_id)
+    CONSTRAINT PK_user_group_mapping PRIMARY KEY (group_id,user_email_id)
 );
+commit;
 
-CREATE TABLE tbl_classes (
-    id BIGINT IDENTITY(1, 1) PRIMARY KEY,
+CREATE TABLE tbl_groups (
+    id BIGSERIAL PRIMARY KEY,
     teacher_id INT,
-    class_name varchar(255),
-    teacher_email_id varchar(255),
-    email_ids varchar(MAX)
+    group_name VARCHAR(255),
+    teacher_email_id VARCHAR(255),
+    email_ids TEXT
 );
+commit;
 
 CREATE TABLE tbl_assignments (
-    id BIGINT IDENTITY(1, 1) PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     owner_email_id varchar(255),
-    class_name varchar(255),
-    class_id INT,
+    group_name varchar(255),
+    group_id INT,
     title VARCHAR(255),
     details VARCHAR(8000),
     duedate varchar(255)
 );
+commit;
 

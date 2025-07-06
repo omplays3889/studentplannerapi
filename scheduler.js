@@ -3,10 +3,10 @@ require('dotenv').config();
 const { DateTime } = require("luxon");
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-const sql = require("mssql");
 const validator = require('validator');
 const cron = require('node-cron');
 const axios = require("axios");
+const queries = require('./dbqueries');
 
 const { queryDatabase } = require('./db.js');
 
@@ -105,19 +105,19 @@ const sendEmail = (email_id, email_body) => {
 
 const cleanUp = async () => {
 
-    let query = 'delete from tbl_assignments WHERE TRY_CAST(LEFT(duedate, 19) AS DATETIME) < DATEADD(DAY, -5, GETDATE())';
+    let query = queries.cleanup_delete_past_due_5_days_assignments;
     await queryDatabase(query, null);
 
-    query = 'delete from tbl_assignments where class_id not in (select DISTINCT TOP 1200 id from tbl_classes)';
+    query = queries.cleanup_delete_assignments_without_groups;
     await queryDatabase(query, null);
 
-    query = 'delete from tbl_user_assignment_mappings where assignment_id not in (select DISTINCT TOP 1200 id from tbl_assignments)';
+    query = queries.cleanup_delete_user_assignment_query;
     await queryDatabase(query, null);
 
 }
 const processReminders = async () => {
     try {
-        const query = 'SELECT DISTINCT TOP 12000 user_email_id FROM tbl_user_assignment_mappings';
+        const query = queries.reminders_get_user_email_ids;
         const params = [
         ];
         const email_ids = await queryDatabase(query, params);
@@ -125,10 +125,8 @@ const processReminders = async () => {
             let trimmed_email = email_id.user_email_id.trim();
             if (validator.isEmail(trimmed_email)) {
                 console.log("Valid emailID : " + trimmed_email);
-                const query = 'SELECT * from tbl_assignments where id in (SELECT DISTINCT TOP 100  assignment_id FROM tbl_user_assignment_mappings where user_email_id = @emailID) order by duedate';
-                const params = [
-                    { name: 'emailID', type: sql.VarChar, value: email_id.user_email_id }
-                ];
+                const query = queries.reminders_get_assignments_query;
+                const params = [email_id.user_email_id];
                 const assignments = await queryDatabase(query, params);
                 let html = '';
 

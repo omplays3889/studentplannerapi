@@ -1,54 +1,46 @@
-
-const sql = require("mssql");
+const { Pool } = require('pg');
 require('dotenv').config();
 
-const config = {
+// PostgreSQL connection config
+const pool = new Pool({
     user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    server: process.env.DB_HOST, // You can use 'localhost\\instance' to connect to a named instance
+    host: process.env.DB_HOST,
     database: process.env.DB_NAME,
-    options: {
-        encrypt: true, // Use this if you're on Windows Azure
-        trustServerCertificate: true // Use this to trust the server certificate (self-signed certificates)
-    },
-    // Setting timeouts
-    connectionTimeout: 120000, // 120 seconds
-    requestTimeout: 120000 // 120 seconds
-};
+    password: process.env.DB_PASS,
+    port: process.env.DB_PORT || 5432,
+    connectionTimeoutMillis: 120000,
+    query_timeout: 120000,
+    ssl: {
+        rejectUnauthorized: false // Use this for self-signed certificates
+    }
+});
 
 async function connectWithRetry(retries = 5, delay = 1000) {
     for (let attempt = 1; attempt <= retries; attempt++) {
         try {
-            let pool = await sql.connect(config);
+            // This tests the connection
+            await pool.query('SELECT 1');
             return pool;
         } catch (err) {
             console.error(`Attempt ${attempt} failed: ${err.message}`);
             if (attempt === retries) {
-                throw new Error('Failed to connect to the database after multiple attempts.');
+                throw new Error('Failed to connect to the PostgreSQL database after multiple attempts.');
             }
             await new Promise(res => setTimeout(res, delay));
         }
     }
 }
 
-  const queryDatabase = async (query, params) => {
+// query function using $1, $2, ... and parameter array
+const queryDatabase = async (query, params = []) => {
     try {
-        let pool = await connectWithRetry();
-        const request = pool.request();
-        // Add parameters to the request
-        if (params) {
-            for (const param of params) {
-                request.input(param.name, param.type, param.value);
-            }
-        }
-        const result = await request.query(query);
-        return result.recordset;
+        const client = await connectWithRetry();
+        const result = await client.query(query, params);
+        return result.rows;
     } catch (err) {
-        console.error('Query failed', err);
+        console.error('Query failed:', err);
         throw err;
     }
-}
-
-module.exports = {
-    queryDatabase
 };
+
+module.exports = { queryDatabase };
