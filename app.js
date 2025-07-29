@@ -19,6 +19,7 @@ const app = express();
 const {unsubscribe, getUsers, getGroups, getAssignments, createGroup, createAssignment, createUser,
   deleteAssignment, deleteGroup, deleteAllData
 } = require('./process.js')
+const {checkLength, checkNumber} = require('./commons.js')
 
 // Basic Authentication Middleware
 const authMiddleware = (req, res, next) => {
@@ -56,6 +57,11 @@ app.get('/api/unsubscribe', async (req, res) => {
 
 app.get('/api/getuser', async (req, res) => {
     const queryParams = req.query;
+    if (checkLength(queryParams.email_id, 175) == false) {
+      res.write(JSON.stringify("Invalid user email address."));
+      res.end();
+      return;
+    }
     const results = await getUsers(queryParams.email_id);
     res.write(JSON.stringify(results));
     res.end();
@@ -63,6 +69,11 @@ app.get('/api/getuser', async (req, res) => {
 
 app.get('/api/obtaingroups', async (req, res) => {
     const queryParams = req.query;
+    if (checkLength(queryParams.email_id, 175) == false) {
+      res.write(JSON.stringify("Invalid user email address."));
+      res.end();
+      return;
+    }
     const results = await getGroups(queryParams.email_id);
     res.write(JSON.stringify(results));
     res.end();
@@ -70,6 +81,11 @@ app.get('/api/obtaingroups', async (req, res) => {
 
 app.get('/api/obtainassignments', async (req, res) => {
     const queryParams = req.query;
+    if (checkLength(queryParams.email_id, 175) == false) {
+      res.write(JSON.stringify("Invalid user email address."));
+      res.end();
+      return;
+    }
     const results = await getAssignments(queryParams.email_id);
     res.write(JSON.stringify(results));
     res.end();
@@ -77,8 +93,23 @@ app.get('/api/obtainassignments', async (req, res) => {
 
 app.post('/api/creategroup', express.json(), async (req, res) => {
     const queryParams = req.query;
-    const body = req.body;
-    const group_id = await createGroup(queryParams.email_id, body);
+    const group_details = req.body;
+    if (checkLength(queryParams.email_id, 175) == false) {
+      res.write(JSON.stringify("Invalid user email address."));
+      res.end();
+      return;
+    }
+    if (checkLength(group_details.group_name, 175) == false) {
+      res.write(JSON.stringify("Invalid group name."));
+      res.end();
+      return;
+    }
+    if (checkLength(group_details.email_ids, 575) == false) {
+      res.write(JSON.stringify("Invalid group email addresses."));
+      res.end();
+      return;
+    }
+    const group_id = await createGroup(queryParams.email_id, group_details);
     res.json({ group_id });
   });
 
@@ -96,8 +127,33 @@ app.post('/api/creategroup', express.json(), async (req, res) => {
   
 app.post('/api/createassignment', express.json(), async (req, res) => {
   const queryParams = req.query;
-  const body = req.body;
-  const assignment_id = await createAssignment(queryParams.email_id, body);
+  const assignment_details = req.body;
+  if (checkLength(assignment_details.group_name, 175) == false) {
+    res.write(JSON.stringify("Invalid assignment group name."));
+    res.end();
+    return;
+  }
+  if (checkNumber(assignment_details.group_id) == false) {
+    res.write(JSON.stringify("Invalid group id."));
+    res.end();
+    return;
+  }
+  if (checkLength(assignment_details.title, 175) == false) {
+    res.write(JSON.stringify("Invalid assignment title."));
+    res.end();
+    return;
+  }
+  if (checkLength(assignment_details.details, 175) == false) {
+    res.write(JSON.stringify("Invalid assignment details."));
+    res.end();
+    return;
+  }
+  if (checkLength(assignment_details.duedate, 175) == false) {
+    res.write(JSON.stringify("Invalid assignment due date."));
+    res.end();
+    return;
+  }
+  const assignment_id = await createAssignment(queryParams.email_id, assignment_details);
   res.json({ assignment_id });
   });
 
@@ -117,9 +173,29 @@ app.post('/api/deletegroup', express.json(), async (req, res) => {
 
 app.post('/api/updategroup', express.json(), async (req, res) => {
         const queryParams = req.query;
-        const body = req.body;
-        await deleteGroup(body);
-        const group_id = await createGroup(queryParams.email_id, body);
+        const group_details = req.body;
+        if (checkLength(queryParams.email_id, 175) == false) {
+          res.write(JSON.stringify("Invalid user email address."));
+          res.end();
+          return;
+        }
+        if (checkNumber(group_details.group_id) == false) {
+          res.write(JSON.stringify("Invalid group id."));
+          res.end();
+          return;
+        }
+        if (checkLength(group_details.group_name, 175) == false) {
+          res.write(JSON.stringify("Invalid group name."));
+          res.end();
+          return;
+        }
+        if (checkLength(group_details.email_ids, 575) == false) {
+          res.write(JSON.stringify("Invalid group email addresses."));
+          res.end();
+          return;
+        }
+        await deleteGroup(group_details);
+        const group_id = await createGroup(queryParams.email_id, group_details);
         res.json({ group_id });
       });
 

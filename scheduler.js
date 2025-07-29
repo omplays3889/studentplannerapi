@@ -199,6 +199,6 @@ cron.schedule('*/15 * * * *', () => {
     scheduled: true
 });
 
-console.log('Scheduler is running with postgresql...');
+console.log('Scheduler is running with postgresql with length checks...');
 
 module.exports = { sendEmail, processReminders };
