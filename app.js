@@ -19,7 +19,7 @@ const app = express();
 const {unsubscribe, getUsers, getGroups, getAssignments, createGroup, createAssignment, createUser,
   deleteAssignment, deleteGroup, deleteAllData
 } = require('./process.js')
-const {checkLength, checkNumber} = require('./commons.js')
+const {checkLength} = require('./commons.js')
 
 // Basic Authentication Middleware
 const authMiddleware = (req, res, next) => {
@@ -133,11 +133,6 @@ app.post('/api/createassignment', express.json(), async (req, res) => {
     res.end();
     return;
   }
-  if (checkNumber(assignment_details.group_id) == false) {
-    res.write(JSON.stringify("Invalid group id."));
-    res.end();
-    return;
-  }
   if (checkLength(assignment_details.title, 175) == false) {
     res.write(JSON.stringify("Invalid assignment title."));
     res.end();
@@ -179,11 +174,6 @@ app.post('/api/updategroup', express.json(), async (req, res) => {
           res.end();
           return;
         }
-        if (checkNumber(group_details.group_id) == false) {
-          res.write(JSON.stringify("Invalid group id."));
-          res.end();
-          return;
-        }
         if (checkLength(group_details.group_name, 175) == false) {
           res.write(JSON.stringify("Invalid group name."));
           res.end();
@@ -201,7 +191,7 @@ app.post('/api/updategroup', express.json(), async (req, res) => {
 
 const PORT = process.env.PORT || 9999;
 app.listen(PORT, () => {
-    console.log("App updated - version 6");
+    console.log("App updated - version 8");
     console.log(`Port provided is ${PORT}`);
     console.log(`Server is running on port ${PORT}`);
   });
